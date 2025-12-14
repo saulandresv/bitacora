@@ -151,10 +151,6 @@
             margin-top: 5px;
         }
         
-        #motivoIncidenteGroup {
-            display: none; 
-        }
-
     </style>
 </head>
 <body>
@@ -220,8 +216,7 @@
 
             <div class="form-group">
                 <label for="tipoMantencion" class="required">Tipo de Mantención</label>
-                <select id="tipoMantencion" required onchange="toggleMotivoIncidente()">
-                    <option value="">-- Seleccionar Tipo --</option>
+                <select id="tipoMantencion" required> <option value="">-- Seleccionar Tipo --</option>
                     <option value="correctiva">CORRECTIVA</option>
                     <option value="programada">PROGRAMADA</option>
                     <option value="preventiva">PREVENTIVA</option>
@@ -231,8 +226,8 @@
             </div>
             
             <div id="motivoIncidenteGroup" class="form-group">
-                <label for="motivoIncidente" class="required">Motivo/Causa del Incidente</label>
-                <input type="text" id="motivoIncidente" placeholder="Describa la causa principal del incidente." />
+                <label for="motivoIncidente" class="required">Motivo/Causa (Texto Libre)</label>
+                <input type="text" id="motivoIncidente" required placeholder="Describa el motivo principal de la intervención o falla." />
             </div>
 
             <div class="form-group">
@@ -340,25 +335,8 @@
         document.getElementById('horaInicio').addEventListener('change', validateTime);
         document.getElementById('horaEntrega').addEventListener('change', validateTime);
         
-        // Función para mostrar/ocultar el campo Motivo Incidente (activado por el dropdown)
-        function toggleMotivoIncidente() {
-            const tipoMantencion = document.getElementById('tipoMantencion').value;
-            const motivoGroup = document.getElementById('motivoIncidenteGroup');
-            const motivoInput = document.getElementById('motivoIncidente');
-            
-            if (tipoMantencion === 'incidente') {
-                motivoGroup.style.display = 'flex'; 
-                motivoInput.setAttribute('required', 'required');
-            } else {
-                motivoGroup.style.display = 'none';
-                motivoInput.removeAttribute('required');
-                motivoInput.value = ''; 
-            }
-        }
-        
         window.onload = function() {
             validateTime();
-            toggleMotivoIncidente();
         };
 
     </script>
