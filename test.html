@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitácora de Mantenimiento - Supervisor</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #f8f9fa;
+            --border-color: #ced4da;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .status-buttons-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        select,
+        textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input:disabled {
+            background-color: var(--secondary-color);
+            color: #6c757d;
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--error-color);
+        }
+
+        .radio-button {
+            padding: 10px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        input[type="radio"]:checked + .radio-button {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        .technical-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .technical-group select {
+            flex-grow: 1;
+        }
+
+        .add-technician-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        .validation-message {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        #motivoIncidenteGroup {
+            display: none; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🛠️ Registro de Bitácora - Supervisor</h1>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label for="supervisor">Supervisor</label>
+                <input type="text" id="supervisor" value="[Usuario Logueado - Supervisor]" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="fecha" class="required">Fecha</label>
+                <input type="text" id="fecha" value="13/12/2025" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="horaInicio" class="required">Hora de Inicio</label>
+                <input type="time" id="horaInicio" value="08:00" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="horaEntrega" class="required">Hora de Entrega</label>
+                <input type="time" id="horaEntrega" value="10:30" required>
+                <p class="validation-message" id="time-error" style="display:none;">⚠️ La hora de entrega no puede ser anterior a la de inicio.</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label for="equipo" class="required">Equipo</label>
+                <select id="equipo" required>
+                    <option value="">-- Seleccionar Equipo --</option>
+                    <option value="bull547">BULL 547</option>
+                    <option value="cf310">CF 310</option>
+                    <option value="caex165">CAEX 165</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="horometro" class="required">Horómetro</label>
+                <input type="number" id="horometro" value="15487" min="0" required>
+                <p class="validation-message">Último registro: 15450. (Validación en envío)</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section status-buttons-container">
+                <label class="required">Estatus del Equipo</label>
+                <div class="status-buttons">
+                    <input type="radio" id="op" name="estatus" value="OP" checked>
+                    <label for="op" class="radio-button">OP (Operativo)</label>
+                    
+                    <input type="radio" id="fs" name="estatus" value="FS">
+                    <label for="fs" class="radio-button">FS (Fuera de Servicio)</label>
+                    
+                    <input type="radio" id="dt" name="estatus" value="DT">
+                    <label for="dt" class="radio-button">DT (Detenido)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tipoMantencion" class="required">Tipo de Mantención</label>
+                <select id="tipoMantencion" required onchange="toggleMotivoIncidente()">
+                    <option value="">-- Seleccionar Tipo --</option>
+                    <option value="correctiva">CORRECTIVA</option>
+                    <option value="programada">PROGRAMADA</option>
+                    <option value="preventiva">PREVENTIVA</option>
+                    <option value="predictiva">PREDICTIVA</option>
+                    <option value="incidente">INCIDENTE</option>
+                </select>
+            </div>
+            
+            <div id="motivoIncidenteGroup" class="form-group">
+                <label for="motivoIncidente" class="required">Motivo/Causa del Incidente</label>
+                <input type="text" id="motivoIncidente" placeholder="Describa la causa principal del incidente." />
+            </div>
+
+            <div class="form-group">
+                <label for="componente" class="required">Componente o Sistema</label>
+                <select id="componente" required>
+                    <option value="">-- Seleccionar Componente --</option>
+                    <option value="motor">MOTOR</option>
+                    <option value="transmision">TRANSMISIÓN</option>
+                    <option value="hidraulico">HIDRÁULICO</option>
+                    <option value="electrico">ELÉCTRICO</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-section" style="grid-template-columns: 1fr;">
+             <div class="form-group">
+                <label for="intervencion" class="required">Descripción Detallada de la Intervención</label>
+                <textarea id="intervencion" rows="4" required placeholder="Ej: Se cambió filtro de aceite y se realizó ajuste de válvulas."></textarea>
+            </div>
+        </div>
+
+        <div class="form-section" style="grid-template-columns: 1fr;">
+            <label class="required">Técnico/s Asignado</label>
+            <div id="technical-list">
+                <div class="technical-group">
+                    <select class="tecnico-select" required>
+                        <option value="">-- Seleccionar Técnico (Principal) --</option>
+                        <option value="tech1">P. Muñoz</option>
+                        <option value="tech2">J. Álvarez</option>
+                        <option value="tech3">C. Soto</option>
+                    </select>
+                    <button type="button" class="add-technician-btn" onclick="addTechnician()">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="fluido" class="required">Tipo de Fluido Usado</label>
+                <select id="fluido" required>
+                    <option value="">-- Seleccionar Fluido --</option>
+                    <option value="sae10">SAE 10</option>
+                    <option value="sae30">SAE 30</option>
+                    <option value="10w40">10W40</option>
+                    <option value="refrigerante">Refrigerante</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="repuesto" class="required">Repuestos Utilizados (Códigos)</label>
+                <select id="repuesto" multiple required size="3">
+                    <option value="np1792">NP1792 (Filtro Aceite)</option>
+                    <option value="np1740">NP1740 (Empaquetadura)</option>
+                    <option value="np1550">NP1550 (Bujía)</option>
+                </select>
+                <p class="validation-message">Mantenga CTRL/CMD presionado para seleccionar varios.</p>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">✅ Registrar Bitácora</button>
+    </div>
+
+    <script>
+        // Función para añadir/remover campo de Técnico
+        function addTechnician() {
+            const list = document.getElementById('technical-list');
+            const originalSelect = document.querySelector('.tecnico-select');
+            
+            const newGroup = document.createElement('div');
+            newGroup.className = 'technical-group';
+            
+            const newSelect = originalSelect.cloneNode(true);
+            newSelect.selectedIndex = 0;
+            newSelect.querySelector('option[value=""]').textContent = '-- Seleccionar Técnico Adicional --';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'add-technician-btn';
+            removeBtn.textContent = '-';
+            removeBtn.onclick = function() { list.removeChild(newGroup); };
+
+            newGroup.appendChild(newSelect);
+            newGroup.appendChild(removeBtn);
+            list.appendChild(newGroup);
+        }
+    
+        // Función de validación de hora (Entrega > Inicio)
+        function validateTime() {
+            const inicio = document.getElementById('horaInicio').value;
+            const entrega = document.getElementById('horaEntrega').value;
+            const timeError = document.getElementById('time-error');
+
+            if (inicio && entrega) {
+                if (entrega <= inicio) {
+                    timeError.style.display = 'block';
+                    return false;
+                } else {
+                    timeError.style.display = 'none';
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        document.getElementById('horaInicio').addEventListener('change', validateTime);
+        document.getElementById('horaEntrega').addEventListener('change', validateTime);
+        
+        // Función para mostrar/ocultar el campo Motivo Incidente (activado por el dropdown)
+        function toggleMotivoIncidente() {
+            const tipoMantencion = document.getElementById('tipoMantencion').value;
+            const motivoGroup = document.getElementById('motivoIncidenteGroup');
+            const motivoInput = document.getElementById('motivoIncidente');
+            
+            if (tipoMantencion === 'incidente') {
+                motivoGroup.style.display = 'flex'; 
+                motivoInput.setAttribute('required', 'required');
+            } else {
+                motivoGroup.style.display = 'none';
+                motivoInput.removeAttribute('required');
+                motivoInput.value = ''; 
+            }
+        }
+        
+        window.onload = function() {
+            validateTime();
+            toggleMotivoIncidente();
+        };
+
+    </script>
+
+</body>
+</html>
